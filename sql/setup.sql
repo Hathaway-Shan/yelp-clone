@@ -8,8 +8,8 @@ DROP TABLE IF EXISTS restaurants;
 CREATE TABLE users (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   username TEXT NOT NULL,
-  email TEXT NOT NULL, 
-  admin BOOLEAN
+  email VARCHAR NOT NULL UNIQUE, 
+  password_hash VARCHAR
 );
 
 CREATE TABLE restaurants (
@@ -27,11 +27,11 @@ CREATE TABLE reviews (
 );
 
 insert into users (
-  username, email, admin
+  username, email
 )
 values
-('example1', 'example1@example.com', false),
-('example2', 'example2@example.com', true);
+('example1', 'example1@example.com'),
+('example2', 'example2@example.com');
 
 insert into restaurants (
   name
