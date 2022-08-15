@@ -24,7 +24,6 @@ const registerAndLogin = async (userProps = {}) => {
   await agent.post('/api/v1/users').send({ email, password });
   return [agent, user];
 };
-console.log(registerAndLogin());
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
@@ -32,14 +31,11 @@ describe('backend-express-template routes', () => {
   });
   it('#post creates a new user', async () => {
     const res = await request(app).post('/api/v1/users').send(mockUser);
-    const { username, email } = mockUser;
-
     expect(res.status).toBe(200);
-    console.log(res.body);
     expect(res.body).toEqual({
       id: expect.any(String),
-      username,
-      email,
+      username: 'testUser',
+      email: 'test@example.com',
     });
   });
   afterAll(() => {
