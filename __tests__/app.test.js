@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const UserService = require('../lib/services/userService');
 
 const mockUser = {
   username: 'testUser',
@@ -23,13 +24,23 @@ const registerAndLogin = async (userProps = {}) => {
   await agent.post('/api/v1/users').send({ email, password });
   return [agent, user];
 };
+console.log(registerAndLogin());
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
-  it('#post creates a new user', () => {
-    //
+  it('#post creates a new user', async () => {
+    const res = await request(app).post('/api/v1/users').send(mockUser);
+    const { username, email } = mockUser;
+
+    expect(res.status).toBe(200);
+    console.log(res.body);
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      username,
+      email,
+    });
   });
   afterAll(() => {
     pool.end();
