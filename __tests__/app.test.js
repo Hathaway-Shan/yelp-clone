@@ -7,7 +7,7 @@ const UserService = require('../lib/services/userService');
 const mockUser = {
   username: 'testUser',
   email: 'test@example.com',
-  password: '123456',
+  password: 'admin',
 };
 
 const mockUser2 = {
@@ -57,7 +57,7 @@ describe('backend-express-template routes', () => {
     await request(app).post('/api/v1/users').send(mockUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
-      .send({ email: 'test@example.com', password: '123456' });
+      .send({ email: 'test@example.com', password: 'admin' });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
@@ -90,5 +90,17 @@ describe('backend-express-template routes', () => {
       name: 'Mama Magliones',
       reviews: ['Its not just a frozen lasagne, its a Mama Maglione!'],
     });
+  });
+  it.only('#get /users shows a list of users to an admin', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/v1/users').send(mockUser);
+    const { email, password } = mockUser;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+
+    const res = await agent.get('/api/v1/users');
+
+    expect(res.status).toBe(200);
+
+    console.log(res.body);
   });
 });
