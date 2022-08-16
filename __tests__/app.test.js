@@ -75,12 +75,17 @@ describe('backend-express-template routes', () => {
       message: 'Invalid password',
     });
   });
-  it.only('#get /restaurants shows a list of restaurants', async () => {
+  it('#get /restaurants shows a list of restaurants', async () => {
     const res = await request(app).get('/api/v1/restaurants');
-
     expect(res.status).toBe(200);
+    expect(res.body.length).toEqual(3);
   });
   afterAll(() => {
     pool.end();
+  });
+  it('#get /restaurants/:id shows a list of restaurants with reviews', async () => {
+    const res = request(app).get('/api/v1/restaurants/:id');
+    console.log(res.body);
+    expect(res.status).toBe(200);
   });
 });
