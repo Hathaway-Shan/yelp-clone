@@ -54,7 +54,6 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#post /sessions logs in an existing user', async () => {
-    //
     await request(app).post('/api/v1/users').send(mockUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
@@ -63,6 +62,17 @@ describe('backend-express-template routes', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       message: 'sign in successful',
+    });
+  });
+  it('#post /sessions errors if pw and email do not match', async () => {
+    await request(app).post('/api/v1/users').send(mockUser);
+    const res = await request(app)
+      .post('/api/v1/users/sessions')
+      .send({ email: 'test@example.com', password: '345678' });
+
+    expect(res.body).toEqual({
+      status: 401,
+      message: 'Invalid password',
     });
   });
   afterAll(() => {
