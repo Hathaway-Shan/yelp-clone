@@ -53,6 +53,16 @@ describe('backend-express-template routes', () => {
         'duplicate key value violates unique constraint "users_email_key"',
     });
   });
+  it('#post /sessions logs in an existing user', async () => {
+    //
+    await (await request(app).post('/api/v1/users')).setEncoding(mockUser);
+    const res = await request(app)
+      .post('/api/v1/users/sessions')
+      .send({ email: 'test@example.com', password: '123456' });
+
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
   afterAll(() => {
     pool.end();
   });
