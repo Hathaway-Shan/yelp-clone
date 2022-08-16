@@ -75,11 +75,11 @@ describe('backend-express-template routes', () => {
       message: 'Invalid password',
     });
   });
-  it('#get /restaurants shows a list of restaurants', async () => {
-    await request(app).get('/restaurants');
+  it.only('#get /restaurants shows a list of restaurants', async () => {
+    await request(app).get('/api/v1/restaurants');
     const res = await request(app);
 
-    console.log(res.body);
+    console.log('test ------>', res);
     expect(res.status).toBe(200);
   });
   afterAll(() => {
