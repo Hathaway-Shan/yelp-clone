@@ -55,13 +55,15 @@ describe('backend-express-template routes', () => {
   });
   it('#post /sessions logs in an existing user', async () => {
     //
-    await (await request(app).post('/api/v1/users')).setEncoding(mockUser);
+    await request(app).post('/api/v1/users').send(mockUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
       .send({ email: 'test@example.com', password: '123456' });
 
-    console.log(res.body);
     expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      message: 'sign in successful',
+    });
   });
   afterAll(() => {
     pool.end();
