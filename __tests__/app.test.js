@@ -106,4 +106,18 @@ describe('backend-express-template routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.length).toEqual(3);
   });
+  it('#post /reviews creates a new review', async () => {
+    const user = await agent.post('/api/v1/users').send(mockUser);
+    const { email, password } = mockUser;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+
+    const res = await agent.post('/api/v1/restuarants/:restId/reviews').send({
+      user_id: user.body.id,
+      restaurant_id: 2,
+      reviews: 'Great place, but only if youre a real New Yorker',
+    });
+
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
 });
