@@ -76,10 +76,8 @@ describe('backend-express-template routes', () => {
     });
   });
   it.only('#get /restaurants shows a list of restaurants', async () => {
-    await request(app).get('/api/v1/restaurants');
-    const res = await request(app);
+    const res = await request(app).get('/api/v1/restaurants');
 
-    console.log('test ------>', res);
     expect(res.status).toBe(200);
   });
   afterAll(() => {
