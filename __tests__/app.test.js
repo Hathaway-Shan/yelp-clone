@@ -83,9 +83,12 @@ describe('backend-express-template routes', () => {
   afterAll(() => {
     pool.end();
   });
-  it('#get /restaurants/:id shows a list of restaurants with reviews', async () => {
-    const res = request(app).get('/api/v1/restaurants/:id');
-    console.log(res.body);
+  it('#get /restaurants/:restId shows a list of restaurants with reviews', async () => {
+    const res = await request(app).get('/api/v1/restaurants/1');
     expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      name: 'Mama Magliones',
+      reviews: ['Its not just a frozen lasagne, its a Mama Maglione!'],
+    });
   });
 });

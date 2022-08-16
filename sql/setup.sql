@@ -1,6 +1,6 @@
 -- Use this file to define your SQL tables
 -- The SQL in this file will be executed when you run `npm run setup-db`
-DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS restaurants_users;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS restaurants;
 
@@ -17,9 +17,9 @@ CREATE TABLE restaurants (
   name TEXT NOT NULL
 );
 
-CREATE TABLE reviews (
+CREATE TABLE restaurants_users (
   id BIGINT GENERATED ALWAYS AS IDENTITY,
-  content VARCHAR(255),
+  reviews VARCHAR(255),
   user_id BIGINT,
   restaurant_id BIGINT, 
   FOREIGN KEY (user_id) REFERENCES users(id),
@@ -41,10 +41,10 @@ values
 ('Lings Palace'),
 ('Schmegelmans Deli');
 
-insert into reviews (
-  user_id, restaurant_id, content
+insert into restaurants_users (
+  user_id, restaurant_id, reviews
 )
 values
 (1, 1, 'Its not just a frozen lasagne, its a Mama Maglione!'),
-(1, 2, 'Its fine. Its just fine.'),
-(2, 3, 'Good soup, terrible service.');
+(2, 3, 'Good soup, terrible service.'),
+(1, 2, 'Its fine. Its just fine.');
