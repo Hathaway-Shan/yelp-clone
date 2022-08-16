@@ -2,11 +2,11 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
-const UserService = require('../lib/services/userService');
+// const UserService = require('../lib/services/userService');
 
 const mockUser = {
   username: 'testUser',
-  email: 'test@example.com',
+  email: 'admin',
   password: 'admin',
 };
 
@@ -16,20 +16,7 @@ const mockUser2 = {
   password: '234567',
 };
 
-const registerAndLogin = async (userProps = {}) => {
-  const password = userProps.password ?? mockUser.password;
-
-  //create agent to track cookies through a single session
-  const agent = request.agent(app);
-
-  //create user to log in with
-  const user = await UserService.create({ ...mockUser, ...userProps });
-
-  //sign in
-  const { email } = user;
-  await agent.post('/api/v1/users').send({ email, password });
-  return [agent, user];
-};
+const agent = request.agent(app);
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
@@ -41,7 +28,7 @@ describe('backend-express-template routes', () => {
     expect(res.body).toEqual({
       id: expect.any(String),
       username: 'testUser',
-      email: 'test@example.com',
+      email: 'admin',
     });
   });
   it('#post created users must have unique emails', async () => {
@@ -57,7 +44,7 @@ describe('backend-express-template routes', () => {
     await request(app).post('/api/v1/users').send(mockUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
-      .send({ email: 'test@example.com', password: 'admin' });
+      .send({ email: 'admin', password: 'admin' });
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
@@ -68,7 +55,7 @@ describe('backend-express-template routes', () => {
     await request(app).post('/api/v1/users').send(mockUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
-      .send({ email: 'test@example.com', password: '345678' });
+      .send({ email: 'admin', password: '345678' });
 
     expect(res.body).toEqual({
       status: 401,
@@ -91,8 +78,7 @@ describe('backend-express-template routes', () => {
       reviews: ['Its not just a frozen lasagne, its a Mama Maglione!'],
     });
   });
-  it.only('#get /users shows a list of users to an admin', async () => {
-    const agent = request.agent(app);
+  it('#get /users shows a list of users to an admin', async () => {
     await agent.post('/api/v1/users').send(mockUser);
     const { email, password } = mockUser;
     await agent.post('/api/v1/users/sessions').send({ email, password });
