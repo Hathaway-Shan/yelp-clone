@@ -75,6 +75,13 @@ describe('backend-express-template routes', () => {
       message: 'Invalid password',
     });
   });
+  it('#get /restaurants shows a list of restaurants', async () => {
+    await request(app).get('/restaurants');
+    const res = await request(app);
+
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
   afterAll(() => {
     pool.end();
   });
