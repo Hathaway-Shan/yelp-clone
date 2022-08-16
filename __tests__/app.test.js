@@ -76,7 +76,7 @@ describe('backend-express-template routes', () => {
   afterAll(() => {
     pool.end();
   });
-  it('#get /restaurants/:restId shows a list of restaurants with reviews', async () => {
+  it('#get /restaurants/:restId shows a restaurant with reviews', async () => {
     const res = await request(app).get('/api/v1/restaurants/1');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
@@ -106,18 +106,20 @@ describe('backend-express-template routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.length).toEqual(3);
   });
-  it('#post /reviews creates a new review', async () => {
+  it('#post /restId/reviews creates a new review', async () => {
     const user = await agent.post('/api/v1/users').send(mockUser);
     const { email, password } = mockUser;
-    await agent.post('/api/v1/users/sessions').send({ email, password });
+    const success = await agent
+      .post('/api/v1/users/sessions')
+      .send({ email, password });
 
-    const res = await agent.post('/api/v1/restuarants/:restId/reviews').send({
+    const res = await agent.post('/api/v1/restaurants/2/reviews').send({
       user_id: user.body.id,
       restaurant_id: 2,
-      reviews: 'Great place, but only if youre a real New Yorker',
+      reviews: 'Great place, but only for a real New Yorker',
     });
 
-    console.log(res.body);
+    console.log('test ----->', res.body);
     expect(res.status).toBe(200);
   });
 });
