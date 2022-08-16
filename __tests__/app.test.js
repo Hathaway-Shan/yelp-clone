@@ -16,6 +16,12 @@ const mockUser2 = {
   password: '234567',
 };
 
+const mockUser3 = {
+  username: 'testUser3',
+  email: 'example3@example.com',
+  password: '345678',
+};
+
 const agent = request.agent(app);
 
 describe('backend-express-template routes', () => {
@@ -78,6 +84,18 @@ describe('backend-express-template routes', () => {
       reviews: ['Its not just a frozen lasagne, its a Mama Maglione!'],
     });
   });
+  it('#get /users rejects non authorized user', async () => {
+    await agent.post('/api/v1/users').send(mockUser3);
+    const { email, password } = mockUser3;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+
+    const res = await agent.get('/api/v1/users');
+
+    expect(res.body).toEqual({
+      status: 403,
+      message: 'You do not have access to view this page',
+    });
+  });
   it('#get /users shows a list of users to an admin', async () => {
     await agent.post('/api/v1/users').send(mockUser);
     const { email, password } = mockUser;
@@ -86,7 +104,6 @@ describe('backend-express-template routes', () => {
     const res = await agent.get('/api/v1/users');
 
     expect(res.status).toBe(200);
-
-    console.log(res.body);
+    expect(res.body.length).toEqual(3);
   });
 });
