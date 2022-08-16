@@ -10,6 +10,12 @@ const mockUser = {
   password: '123456',
 };
 
+const mockUser2 = {
+  username: 'testUser2',
+  email: 'example1@example.com',
+  password: '234567',
+};
+
 const registerAndLogin = async (userProps = {}) => {
   const password = userProps.password ?? mockUser.password;
 
@@ -36,6 +42,15 @@ describe('backend-express-template routes', () => {
       id: expect.any(String),
       username: 'testUser',
       email: 'test@example.com',
+    });
+  });
+  it('#post created users must have unique emails', async () => {
+    const res = await request(app).post('/api/v1/users').send(mockUser2);
+
+    expect(res.body).toEqual({
+      status: 500,
+      message:
+        'duplicate key value violates unique constraint "users_email_key"',
     });
   });
   afterAll(() => {
