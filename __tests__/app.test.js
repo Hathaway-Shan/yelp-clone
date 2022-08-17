@@ -4,19 +4,19 @@ const request = require('supertest');
 const app = require('../lib/app');
 // const UserService = require('../lib/services/userService');
 
-const mockUser = {
+const adminUser = {
   username: 'testUser',
   email: 'admin',
   password: 'admin',
 };
 
-const mockUser2 = {
+const doubleUser = {
   username: 'testUser2',
   email: 'example1@example.com',
   password: '234567',
 };
 
-const mockUser3 = {
+const mockUser = {
   username: 'testUser3',
   email: 'example3@example.com',
   password: '345678',
@@ -29,7 +29,7 @@ describe('backend-express-template routes', () => {
     return setup(pool);
   });
   it('#post creates a new user', async () => {
-    const res = await request(app).post('/api/v1/users').send(mockUser);
+    const res = await request(app).post('/api/v1/users').send(adminUser);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       id: expect.any(String),
@@ -38,7 +38,7 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#post created users must have unique emails', async () => {
-    const res = await request(app).post('/api/v1/users').send(mockUser2);
+    const res = await request(app).post('/api/v1/users').send(doubleUser);
 
     expect(res.body).toEqual({
       status: 500,
@@ -47,7 +47,7 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#post /sessions logs in an existing user', async () => {
-    await request(app).post('/api/v1/users').send(mockUser);
+    await request(app).post('/api/v1/users').send(adminUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
       .send({ email: 'admin', password: 'admin' });
@@ -58,7 +58,7 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#post /sessions errors if pw and email do not match', async () => {
-    await request(app).post('/api/v1/users').send(mockUser);
+    await request(app).post('/api/v1/users').send(adminUser);
     const res = await request(app)
       .post('/api/v1/users/sessions')
       .send({ email: 'admin', password: '345678' });
@@ -85,8 +85,8 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#get /users rejects non authorized user', async () => {
-    await agent.post('/api/v1/users').send(mockUser3);
-    const { email, password } = mockUser3;
+    await agent.post('/api/v1/users').send(mockUser);
+    const { email, password } = mockUser;
     await agent.post('/api/v1/users/sessions').send({ email, password });
 
     const res = await agent.get('/api/v1/users');
@@ -97,8 +97,8 @@ describe('backend-express-template routes', () => {
     });
   });
   it('#get /users shows a list of users to an admin', async () => {
-    await agent.post('/api/v1/users').send(mockUser);
-    const { email, password } = mockUser;
+    await agent.post('/api/v1/users').send(adminUser);
+    const { email, password } = adminUser;
     await agent.post('/api/v1/users/sessions').send({ email, password });
 
     const res = await agent.get('/api/v1/users');
@@ -107,11 +107,9 @@ describe('backend-express-template routes', () => {
     expect(res.body.length).toEqual(3);
   });
   it('#post /restId/reviews creates a new review', async () => {
-    const user = await agent.post('/api/v1/users').send(mockUser);
-    const { email, password } = mockUser;
-    const success = await agent
-      .post('/api/v1/users/sessions')
-      .send({ email, password });
+    const user = await agent.post('/api/v1/users').send(adminUser);
+    const { email, password } = adminUser;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
 
     const res = await agent.post('/api/v1/restaurants/2/reviews').send({
       user_id: user.body.id,
@@ -119,7 +117,21 @@ describe('backend-express-template routes', () => {
       reviews: 'Great place, but only for a real New Yorker',
     });
 
-    console.log('test ----->', res.body);
     expect(res.status).toBe(200);
+    expect(res.body.user_id).toEqual(user.body.id);
+  });
+  it('#delete /reviews/:id review authors can delete them', async () => {
+    const user = await agent.post('/api/v1/users').send(mockUser);
+    const { email, password } = mockUser;
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+
+    let res = await agent.post('/api/v1/restaurants/1/reviews').send({
+      user_id: user.body.id,
+      restaurant_id: 1,
+      reviews: 'This is a test review',
+    });
+    res = agent.delete('/api/v1/reviews/4');
+    expect(res.status).toBe(200);
+    console.log('test ----->', res.body);
   });
 });
