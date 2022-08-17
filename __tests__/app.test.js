@@ -130,8 +130,10 @@ describe('backend-express-template routes', () => {
       restaurant_id: 1,
       reviews: 'This is a test review',
     });
-    res = agent.delete('/api/v1/reviews/4');
     expect(res.status).toBe(200);
-    console.log('test ----->', res.body);
+    // console.log('test ----->', res.body);
+    res = await agent.delete('/api/v1/reviews/4');
+    // console.log('test2 ----->', res.body);
+    expect(res.status).toBe(404);
   });
 });
