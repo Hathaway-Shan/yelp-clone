@@ -19,6 +19,7 @@ CREATE TABLE restaurants (
 
 CREATE TABLE restaurants_users (
   id BIGINT GENERATED ALWAYS AS IDENTITY,
+  stars INT NOT NULL,
   reviews VARCHAR(255),
   user_id BIGINT,
   restaurant_id BIGINT, 
@@ -42,9 +43,9 @@ values
 ('Schmegelmans Deli');
 
 insert into restaurants_users (
-  user_id, restaurant_id, reviews
+  user_id, restaurant_id, stars, reviews
 )
 values
-(1, 1, 'Its not just a frozen lasagne, its a Mama Maglione!'),
-(2, 3, 'Good soup, terrible service.'),
-(1, 2, 'Its fine. Its just fine.');
+(1, 1, 5, 'Its not just a frozen lasagne, its a Mama Maglione!'),
+(2, 3, 5, 'Good soup, terrible service.'),
+(1, 2, 5, 'Its fine. Its just fine.');

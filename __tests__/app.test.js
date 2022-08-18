@@ -80,8 +80,14 @@ describe('backend-express-template routes', () => {
     const res = await request(app).get('/api/v1/restaurants/1');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
+      id: '1',
       name: 'Mama Magliones',
-      reviews: ['Its not just a frozen lasagne, its a Mama Maglione!'],
+      reviews: [
+        {
+          reviews: 'Its not just a frozen lasagne, its a Mama Maglione!',
+          stars: 5,
+        },
+      ],
     });
   });
   it('#get /users rejects non authorized user', async () => {
@@ -114,11 +120,18 @@ describe('backend-express-template routes', () => {
     const res = await agent.post('/api/v1/restaurants/2/reviews').send({
       user_id: user.body.id,
       restaurant_id: 2,
-      reviews: 'Great place, but only for a real New Yorker',
+      stars: 5,
+      reviews: 'It was okay',
     });
-
     expect(res.status).toBe(200);
     expect(res.body.user_id).toEqual(user.body.id);
+    expect(res.body).toEqual({
+      id: '4',
+      user_id: user.body.id,
+      restaurant_id: '2',
+      reviews: 'It was okay',
+      stars: 5,
+    });
   });
   it('#delete /reviews/:id review authors can delete them', async () => {
     const user = await agent.post('/api/v1/users').send(mockUser);
@@ -129,11 +142,10 @@ describe('backend-express-template routes', () => {
       user_id: user.body.id,
       restaurant_id: 1,
       reviews: 'This is a test review',
+      stars: 1,
     });
     expect(res.status).toBe(200);
-    // console.log('test ----->', res.body);
-    res = await agent.delete('/api/v1/reviews/4');
-    // console.log('test2 ----->', res.body);
-    expect(res.status).toBe(404);
+    res = await agent.delete('/api/v1/restaurants/reviews/4');
+    expect(res.status).toBe(200);
   });
 });
